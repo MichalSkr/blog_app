@@ -1,0 +1,49 @@
+ARG DJANGO_ALLOWED_HOSTS
+
+FROM node:12.9.0-alpine as blog-build
+ARG DJANGO_ALLOWED_HOSTS
+
+WORKDIR /tmp
+COPY ./be .
+RUN export APP_DOMAIN=$DJANGO_ALLOWED_HOSTS
+
+FROM python:3.8.2
+ENV PYTHONUNBUFFERED 1
+
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    openssl \
+    wget \
+    htop \
+    vim
+
+#Install python modules
+RUN pip install --upgrade pip
+RUN pip install -r /tmp/be/requirements.txt
+
+# Add code
+COPY ./be/ /var/www/
+
+RUN ls /var/www
+
+#initial migratios <if needed>
+COPY ./docker/init.sh /var/www/be/init.sh
+
+# Storage Locations
+RUN mkdir -p /var/www/be/media && \
+    chmod -R 0755 /var/www/be/media && \
+    # Create hashed temporary upload locations
+    mkdir -p /var/www/be/_upload/{0..9} && chmod 777 -R /var/www/be/_upload && \
+	touch /var/log/uwsgi_blog.log
+
+WORKDIR /var/www/be
+
+# Clean Up
+RUN apt-get autoremove -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+CMD /var/www/be/init.sh
+
+#expose uwsgi
+EXPOSE 3031

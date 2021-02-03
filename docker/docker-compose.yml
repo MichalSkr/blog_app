@@ -1,0 +1,36 @@
+version: '3.4'
+services:
+  blog:
+    image: tests/blog:1.0.0
+    build:
+      context: .
+      dockerfile: docker/BlogDockerfile
+      args:
+        DJANGO_ALLOWED_HOSTS: blog.lexiv.me
+    volumes:
+      - blog:/var/www/
+    env_file:
+      - docker.env
+    networks:
+      - blognetwork
+  db:
+    image: tests/postgres:latest
+    restart: unless-stopped    
+    env_file:
+       - docker.env
+    build: 
+      context: .
+      dockerfile: docker/DBDockerfile
+    ports:
+      - "5432"
+    volumes:
+      - blog:/var/lib/postgresql/data
+    networks:
+      - blognetwork
+    
+volumes:
+   blog:
+
+networks:
+    blognetwork:
+       driver: bridge
