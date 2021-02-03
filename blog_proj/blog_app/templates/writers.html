@@ -1,0 +1,34 @@
+
+<!doctype html>
+{% load static %}
+<html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <title>Articles by writer</title>
+      <meta name="author" content="MichalSklyar">
+
+
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+    </head>
+
+    <body>
+         <table class="styled_table">
+            <thead>
+                <tr>
+                    <th>Writer</th>
+                    <th>Total Articles Written</th>
+                    <th>Total Articles Written Last 30</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in writers %}
+            <tr>
+                 <td>{{ item.name }}</td>
+                 <td>{{ item.articles_count.all }}</td>
+                <td>{{ item.articles_count.last }}</td>
+            </tr>
+           {% endfor %}
+           </tbody>
+        </table>
+    </body>
+</html>

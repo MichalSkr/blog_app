@@ -1,0 +1,53 @@
+
+<!doctype html>
+{% load static %}
+{% csrf_token %}
+<html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <title>Articles to be approved/rejected</title>
+      <meta name="author" content="MichalSklyar">
+
+
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script type="text/javascript">
+            var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+            const updateFunc = (id, action) => {
+                $.post(`${id}/`, {
+                   action_type: action,
+                   csrfmiddlewaretoken: CSRFtoken
+               }).done(resp=>{
+                if(resp){
+                    location.href = "/article-approval/";
+                }
+               })
+            }
+        </script>
+    </head>
+
+    <body>
+         <table class="styled_table">
+            <thead>
+                <tr>
+                    <th>Article title</th>
+                    <th>Approve/Reject</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in articles %}
+            <tr>
+                 <td>{{ item.title }}</td>
+                <td>
+                    <button class="approve_btn"
+                           onclick="updateFunc({{item.id}}, 'approve')">Approve</button>
+                    <button class="reject_btn"
+                            onclick="updateFunc({{item.id}}, 'reject')">Reject </button>
+                </td>
+
+            </tr>
+           {% endfor %}
+           </tbody>
+        </table>
+    </body>
+</html>

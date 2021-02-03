@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>All articles you edit</title>
+         <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+    </head>
+    <body>
+         <table class="styled_table">
+            <thead>
+                <tr>
+                    <th>Article title</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in articles %}
+            <tr>
+                 <td>{{ item.title }}</td>
+                <td>
+                    {%if item.approve_reject %}
+                        {{item.approve_reject}}
+                    {% else %}
+                    -
+                    {%endif%}
+                </td>
+            </tr>
+           {% endfor %}
+           </tbody>
+        </table>
+    </body>
+</html>
